@@ -1185,14 +1185,37 @@ select.input-inset {
   height: 100% !important;
   object-fit: cover !important;
   object-position: center center !important;
+  /* Additional iOS-specific optimizations */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  /* Prevent video zoom on iOS */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  /* Ensure proper video scaling */
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
 }
 
 /* iOS Safari specific fixes */
 @supports (-webkit-touch-callout: none) {
   .ios-video-fix {
     /* Additional iOS-specific optimizations */
-    -webkit-mask-image: -webkit-radial-gradient(white, black);
-    mask-image: radial-gradient(white, black);
+    /* Force video to cover entire container */
+    width: 100vw !important;
+    height: 100vh !important;
+    left: 50% !important;
+    top: 50% !important;
+    -webkit-transform: translate(-50%, -50%) translate3d(0, 0, 0);
+    transform: translate(-50%, -50%) translate3d(0, 0, 0);
+    /* Prevent iOS video controls overlay */
+    -webkit-appearance: none;
+    appearance: none;
   }
 }
 
@@ -1202,19 +1225,59 @@ select.input-inset {
         /* Prevent iOS from pausing video on scroll */
         -webkit-overflow-scrolling: auto;
         /* Ensure proper scaling on mobile */
-        min-width: 100% !important;
-        min-height: 100% !important;
+        min-width: 100vw !important;
+        min-height: 100vh !important;
+        /* Force full coverage on mobile */
+        width: 100vw !important;
+        height: 100vh !important;
+        /* Center video properly */
+        left: 50% !important;
+        top: 50% !important;
+        -webkit-transform: translate(-50%, -50%) scale(1.1);
+        transform: translate(-50%, -50%) scale(1.1);
     }
     
     /* Prevent hero inline video from zooming on mobile */
     .hero-inline-video {
-        transform: none !important;
+        -webkit-transform: translate3d(0, 0, 0) !important;
+        transform: translate3d(0, 0, 0) !important;
         object-fit: cover !important;
         object-position: center center !important;
         width: 100% !important;
         height: 100% !important;
-        min-width: auto !important;
-        min-height: auto !important;
+        min-width: 100% !important;
+        min-height: 100% !important;
+        /* Prevent video controls on mobile */
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+    }
+}
+
+/* Enhanced video container for mobile */
+@media (max-width: 767px) and (orientation: portrait) {
+    .ios-video-fix {
+        /* Portrait mobile optimization */
+        width: 100vw !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        object-fit: cover !important;
+        -webkit-transform: translate(-50%, -50%) scale(1.05);
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+    .ios-video-fix {
+        /* Landscape mobile optimization */
+        width: 100vw !important;
+        height: 100vh !important;
+        min-width: 100vw !important;
+        object-fit: cover !important;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
     }
 }
 
@@ -1226,6 +1289,8 @@ select.input-inset {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    /* Ensure proper stacking */
+    z-index: 0;
 }
 
 .video-background video {
@@ -1236,9 +1301,14 @@ select.input-inset {
     min-height: 100%;
     width: auto;
     height: auto;
-    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%) translate3d(0, 0, 0);
+    transform: translate(-50%, -50%) translate3d(0, 0, 0);
     object-fit: cover;
     object-position: center center;
+    /* Mobile video optimization */
+    -webkit-playsinline: true;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /* Responsive image lazy loading */
