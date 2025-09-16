@@ -28,12 +28,9 @@ const HomeHeroText = () => {
               disablePictureInPicture
               disableRemotePlayback
               onLoadedData={(e) => {
-                // Force play on iOS after video loads
                 const video = e.target;
-                video.style.width = '100%';
-                video.style.height = '100%';
-                video.style.objectFit = 'cover';
-                video.style.objectPosition = 'center center';
+                video.muted = true;
+                video.playsInline = true;
                 
                 const playPromise = video.play();
                 if (playPromise !== undefined) {
@@ -44,7 +41,6 @@ const HomeHeroText = () => {
               }}
               onError={(e) => {
                 console.warn('Inline video failed to load');
-                // Hide video if it fails to load
                 e.target.style.display = 'none';
               }}
             >

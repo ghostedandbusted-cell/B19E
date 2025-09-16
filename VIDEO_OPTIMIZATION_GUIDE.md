@@ -16,14 +16,14 @@
 ### FFmpeg Command for Optimization:
 
 ```bash
-# For 1080p version (recommended for desktop)
-ffmpeg -i input.mp4 -c:v libx264 -profile:v main -level:v 4.0 -crf 23 -preset medium -c:a aac -b:a 128k -movflags +faststart -pix_fmt yuv420p output_1080p.mp4
+# CRITICAL: iOS-Compatible Video (Use this exact command)
+ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.1 -crf 20 -preset slow -c:a aac -b:a 128k -ar 44100 -movflags +faststart -pix_fmt yuv420p -vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" -t 30 -r 30 output.mp4
 
-# For 720p mobile-optimized version
-ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.1 -crf 25 -preset medium -c:a aac -b:a 96k -movflags +faststart -pix_fmt yuv420p -vf "scale=1280:720" output_720p.mp4
+# Alternative mobile-optimized version (smaller file size)
+ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 23 -preset slow -c:a aac -b:a 96k -ar 44100 -movflags +faststart -pix_fmt yuv420p -vf "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -t 30 -r 30 output_mobile.mp4
 
-# For ultra-compressed mobile version (under 5MB)
-ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 28 -preset slow -c:a aac -b:a 64k -movflags +faststart -pix_fmt yuv420p -vf "scale=960:540" -t 30 output_mobile.mp4
+# Quick test version (very small file for testing)
+ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 28 -preset slow -c:a aac -b:a 64k -ar 44100 -movflags +faststart -pix_fmt yuv420p -vf "scale=960:540:force_original_aspect_ratio=decrease,pad=960:540:(ow-iw)/2:(oh-ih)/2" -t 15 -r 24 output_test.mp4
 ```
 
 ## Implementation Steps
