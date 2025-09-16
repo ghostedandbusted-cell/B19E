@@ -1169,16 +1169,6 @@ select.input-inset {
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
-  will-change: transform;
-}
-
-/* iOS-specific video fixes */
-@supports (-webkit-touch-callout: none) {
-  video {
-    -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    transform: translateZ(0);
-  }
   backface-visibility: hidden;
   /* Ensure video plays inline on iOS */
   -webkit-playsinline: true;
