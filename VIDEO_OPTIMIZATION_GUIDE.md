@@ -22,6 +22,12 @@ ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.1 -crf 20 -prese
 # Alternative mobile-optimized version (smaller file size)
 ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 23 -preset slow -c:a aac -b:a 96k -ar 44100 -movflags +faststart -pix_fmt yuv420p -vf "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -t 30 -r 30 output_mobile.mp4
 
+# For inline video elements (smaller, optimized for circular display)
+ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 25 -preset medium -c:a aac -b:a 64k -ar 44100 -movflags +faststart -pix_fmt yuv420p -vf "scale=400:400:force_original_aspect_ratio=increase,crop=400:400" -t 15 -r 24 output_inline.mp4
+
+# Create WebM version for better browser support
+ffmpeg -i input.mp4 -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -vf "scale=400:400:force_original_aspect_ratio=increase,crop=400:400" -t 15 output_inline.webm
+
 # Quick test version (very small file for testing)
 ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 28 -preset slow -c:a aac -b:a 64k -ar 44100 -movflags +faststart -pix_fmt yuv420p -vf "scale=960:540:force_original_aspect_ratio=decrease,pad=960:540:(ow-iw)/2:(oh-ih)/2" -t 15 -r 24 output_test.mp4
 ```
@@ -36,6 +42,7 @@ ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 28 -prese
 ### 2. Add Multiple Video Sources (Optional)
 ```html
 <video>
+  <source src="/video_inline.webm" type="video/webm" media="(max-width: 768px)">
   <source src="/video_mobile.mp4" type="video/mp4" media="(max-width: 768px)">
   <source src="/video.mp4" type="video/mp4">
 </video>
@@ -56,12 +63,17 @@ ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 28 -prese
 - `loop` - Continuous playback
 - `preload="auto"` - Preloads video data
 - `webkit-playsinline="true"` - iOS-specific inline play
+- `poster` - Fallback image while loading
+- `disablePictureInPicture` - Prevents PiP mode
+- `disableRemotePlayback` - Prevents casting
 
 ### CSS Requirements:
 - `object-fit: cover` - Maintains aspect ratio
 - `object-position: center center` - Centers video
 - Hardware acceleration with `transform: translate3d(0,0,0)`
 - Proper z-index stacking
+- `aspect-ratio` property for consistent sizing
+- Smooth transitions with `transition` property
 
 ## Troubleshooting Common Issues
 
@@ -101,5 +113,22 @@ ffmpeg -i input.mp4 -c:v libx264 -profile:v baseline -level:v 3.0 -crf 28 -prese
 - **Desktop**: 5-15MB (1080p, higher quality)
 - **Mobile**: 2-8MB (720p, optimized)
 - **Ultra-mobile**: 1-3MB (540p, highly compressed)
+- **Inline videos**: 500KB-2MB (400x400, square format)
+- **WebM format**: 30-50% smaller than MP4
 
+## Cross-Platform Testing Checklist
+
+- [ ] Video plays on iPhone Safari (iOS 12+)
+- [ ] Video plays on iPhone Chrome
+- [ ] Video plays on Android Chrome
+- [ ] Video plays on Android Firefox
+- [ ] Video plays on Desktop Safari
+- [ ] Video plays on Desktop Chrome
+- [ ] Video plays on Desktop Firefox
+- [ ] Video plays on Desktop Edge
+- [ ] Aspect ratio consistent across all devices
+- [ ] Fallback image displays properly if video fails
+- [ ] Loading states work correctly
+- [ ] No layout shifts during video loading
+- [ ] Performance acceptable on 3G networks
 Remember to test on actual iOS devices, as desktop Safari behavior differs from mobile Safari.
